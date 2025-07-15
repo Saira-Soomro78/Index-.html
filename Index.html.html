@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title> Summarizer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Primary Colors */
+            --primary: #4f46e5; /* Vibrant Indigo */
+            --primary-light: #6366f1;
+            --primary-dark: #4338ca;
+            --secondary: #c92045; /* Brighter Teal */
+            --accent: #ec6fb4; /* Bright Amber */
+
+            /* Neutral Colors */
+            --gray-900: #1a202c; /* Darkest text */
+            --gray-800: #2d3748;
+            --gray-700: #4a5568; /* Medium text */
+            --gray-600: #718096;
+            --gray-500: #a0aec0;
+            --gray-400: #cbd5e0; /* Borders */
+            --gray-300: #4170cc;
+            --gray-200: #e5f2fd; /* Light backgrounds */
+            --gray-100: #ebeef0; /* Very light background for body */
+            --white: #ffffff;
+
+            /* Status Colors */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+
+            /* Gradients */
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --gradient-secondary: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, var(--primary-light) 100%);
+            --gradient-feedback: linear-gradient(135deg, rgba(79, 70, 229, 0.05) 0%, rgba(233, 30, 99, 0.05) 100%); /* Subtle feedback background */
+
+            /* Shadows & Radii */
+            --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 50px rgba(0,0,0,0.15);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 20px;
+            
+            /* Transitions */
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f7e4ec; /* A soft, beautiful peach/coral tone */
+    color: var(--gray-800);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px;
+    line-height: 1.6;
+         }
+
+        /* Main Container */
+        .container {
+    width: 100%;
+    max-width: 1000px;
+    background-color: #f5f5d1; /* A very subtle off-white yellow for the card */
+    padding: 0;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    animation: fadeIn 0.8s ease-out;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--gray-300);
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: var(--gradient-primary); /* Top gradient accent */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Header Section */
+        .header {
+    padding: 40px 48px 32px;
+    text-align: center;
+    background-color: hsl(115, 60%, 92%); /* A very light, subtle off-white */
+    position: relative;
+         }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
+            background-color: rgba(21, 255, 13, 0.1); /* Secondary color with transparency */
+            border-radius: 100px;
+            color: var(--secondary);
+            font-weight: 700;
+            font-size: 1.25rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .logo i {
+            font-size: 1.6rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 16px;
+            line-height: 1.3;
+            background: var(--gradient-primary); /* Gradient text effect */
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--gray-600);
+            max-width: 700px;
+            margin: 0 auto 24px;
+            font-weight: 400;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            padding: 0 48px 48px;
+            position: relative;
+        }
+
+        /* Input Section */
+        .input-section {
+            margin-bottom: 32px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--gray-800);
+            font-size: 1.1rem;
+        }
+
+        .input-container {
+            position: relative;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            margin-bottom: 20px; /* Space between URL and Textarea */
+        }
+
+        .input-container:focus-within {
+            box-shadow: 0 0 0 3px rgba(32, 201, 151, 0.3), var(--shadow-sm); /* Secondary color focus ring */
+        }
+
+        input[type="url"],
+        textarea {
+            width: 100%;
+            padding: 20px;
+            font-family: inherit;
+            font-size: 1.05rem;
+            border: none;
+            background-color: var(--white);
+            transition: var(--transition);
+            color: var(--gray-800);
+            line-height: 1.7;
+        }
+
+        input[type="url"] {
+            border-bottom: 1px solid var(--gray-300);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+        
+        textarea {
+            height: 240px;
+            resize: vertical;
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        }
+
+        input[type="url"]:focus,
+        textarea:focus {
+            outline: none;
+        }
+
+        .input-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background-color: var(--gray-100);
+            border-top: 1px solid var(--gray-300);
+            font-size: 0.9rem;
+            color: var(--gray-500);
+        }
+
+        .char-count {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: var(--gray-500);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .control-btn:hover {
+            color: var(--secondary);
+        }
+
+        /* Example Blogs Section */
+        .examples-section {
+            background-color: var(--gray-200); /* Light gray background */
+            padding: 20px 24px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-xs);
+        }
+
+        .examples-section h3 {
+            font-size: 1.2rem;
+            color: var(--gray-800);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .example-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray-300);
+            font-size: 0.95rem;
+            color: var(--gray-700);
+        }
+
+        .example-item:last-child {
+            border-bottom: none;
+        }
+
+        .example-item strong {
+            font-weight: 500;
+        }
+
+        .load-btn {
+            background: var(--accent); /* Amber accent for load buttons */
+            color: var(--white);
+            border: none;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .load-btn:hover {
+            background: var(--primary); /* Hover to primary color */
+            transform: translateY(-1px);
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 32px;
+        }
+
+        button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(255,255,255,0.2), rgba(255,255,255,0));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        button:hover::after {
+            opacity: 1;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary); /* Primary gradient button */
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: var(--white);
+            color: var(--primary);
+            border: 1px solid var(--gray-300);
+            box-shadow: var(--shadow-xs);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--gray-100);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        button i {
+            font-size: 1rem;
+        }
+
+        /* Output Section */
+        .output-section {
+            margin-top: 48px;
+            display: none; /* Hidden by default */
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .output-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: var(--radius-sm);
+            background-color: var(--gray-200);
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .action-btn:hover {
+            background-color: var(--gray-300);
+            color: var(--gray-800);
+        }
+
+        .output-container {
+            background-color: var(--gray-200); /* Light background for output */
+            padding: 32px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--secondary); /* Teal accent border */
+            position: relative;
+            overflow: hidden;
+        }
+
+        .output-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, rgba(32, 201, 151, 0.1) 0%, rgba(32, 201, 151, 0) 70%); /* Subtle radial gradient */
+        }
+
+        #outputText {
+            font-size: 1.1rem;
+            color: var(--gray-700);
+            line-height: 1.8;
+            position: relative;
+            white-space: pre-wrap; /* Preserve formatting from JS */
+        }
+
+        /* Stats Section */
+        .stats-container {
+            display: flex;
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background-color: var(--white);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-xs);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-accent); /* Amber accent gradient */
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.2rem;
+        }
+
+        .stat-content h4 {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .stat-content p {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .stat-content .stat-diff {
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .stat-content .positive {
+            color: var(--success);
+        }
+
+        /* Features Section */
+        .features-section {
+            margin-top: 60px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .feature-card {
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-slow);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 0;
+            background: var(--gradient-secondary); /* Secondary gradient border on hover */
+            transition: var(--transition-slow);
+        }
+
+        .feature-card:hover::after {
+            height: 100%;
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--gradient-accent); /* Amber accent for icon backgrounds */
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: var(--white);
+            font-size: 1.4rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+            color: var(--gray-900);
+        }
+
+        .feature-card p {
+            font-size: 1rem;
+            color: var(--gray-700);
+            line-height: 1.7;
+        }
+
+        /* Feedback Section */
+        .feedback-section {
+            margin-top: 60px;
+            background: var(--gradient-feedback); /* Subtle gradient background */
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+        }
+
+        .feedback-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(79, 70, 229, 0.05) 0%, transparent 50%);
+        }
+
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .feedback-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--gradient-primary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .feedback-content h2 {
+            font-size: 1.5rem;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+
+        .feedback-content p {
+            color: var(--gray-700);
+        }
+
+        .feedback-input-container {
+            position: relative;
+        }
+
+        #feedbackInput {
+            height: 140px;
+            background-color: var(--white);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-xs);
+        }
+
+        .feedback-btn {
+            margin-top: 20px;
+            background: var(--gradient-accent); /* Amber accent gradient for feedback button */
+            color: var(--white);
+        }
+
+        .thank-you-message {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px;
+            background-color: rgba(16, 185, 129, 0.1); /* Success color with transparency */
+            border-radius: var(--radius-md);
+            margin-top: 20px;
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .thank-you-message i {
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid var(--gray-300);
+            font-size: 0.9rem;
+            color: var(--gray-500);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 15px;
+        }
+
+        .footer-link {
+            color: var(--gray-600);
+            text-decoration: none;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .footer-link:hover {
+            color: var(--primary);
+        }
+
+        /* Loading animation */
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .loading {
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Toast notification */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .toast {
+            padding: 12px 24px;
+            color: var(--white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideInUp 0.3s ease-out forwards;
+            opacity: 0;
+            min-width: 250px;
+            text-align: center;
+            justify-content: center;
+        }
+
+        .toast.hide {
+            animation: slideOutDown 0.3s ease-in forwards;
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideOutDown {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(20px); }
+        }
+
+        .toast-info { background-color: var(--secondary); }
+        .toast-success { background-color: var(--success); }
+        .toast-warning { background-color: var(--warning); }
+        .toast-error { background-color: var(--error); }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .header, .main-content {
+                padding: 32px 24px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .stats-container {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .feedback-section {
+                padding: 32px 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header, .main-content {
+                padding: 28px 20px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .logo {
+                font-size: 1.1rem;
+                padding: 10px 20px;
+            }
+
+            .output-container {
+                padding: 24px;
+            }
+
+            .feature-card {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo">
+                    <i class="fas fa-sparkles"></i>
+                    <span>Content Summarization</span>
+                </div>
+            </div>
+            <h1>Intelligent Blog Summarization</h1>
+            <p class="subtitle">Transform lengthy articles and reports into concise, meaningful summaries with our advanced AI technology.</p>
+        </div>
+
+            <div class="examples-section">
+                <h3><i class="fas fa-book-open"></i> Try an Example Blog:</h3>
+                <!-- UPDATED BLOGS BELOW -->
+                 <div class="example-item">
+                    <strong>Cyber Security & Penetration Testing</strong>
+                    <button class="load-btn" onclick="loadExample(1)">Load</button>
+                </div>
+                <div class="example-item">
+                    <strong>Front-End Development: Building User Interfaces</strong>
+                    <button class="load-btn" onclick="loadExample(2)">Load</button>
+                </div>
+                <div class="example-item">
+                    <strong>Back-End Development: Powering Web Applications</strong>
+                    <button class="load-btn" onclick="loadExample(3)">Load</button>
+                </div>
+            </div>
+
+            <div class="input-section">
+                <label for="urlInput">Enter URL (Optional)</label>
+                <div class="input-container">
+                    <input type="url" id="urlInput" placeholder="Paste a blog or article URL here (e.g., https://example.com/article)">
+                    <textarea id="blogInput" placeholder="Or paste your blog content here..."></textarea>
+                    <div class="input-footer">
+                        <div class="char-count">
+                            <i class="fas fa-text-width"></i>
+                            <span id="charCount">0</span> characters
+                        </div>
+                        <div class="controls">
+                            <button class="control-btn" onclick="clearText()">
+                                <i class="fas fa-eraser"></i>
+                                Clear
+                            </button>
+                            <button class="control-btn" onclick="pasteText()">
+                                <i class="fas fa-paste"></i>
+                                Paste
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-primary" onclick="summariseContent()">
+                        <i class="fas fa-magic"></i>
+                        Generate Summary
+                    </button>
+                    <button class="btn-secondary" onclick="clearAllInputs()">
+                        <i class="fas fa-trash-alt"></i>
+                        Clear All
+                    </button>
+                </div>
+            </div>
+
+            <div class="output-section" id="outputSection">
+                <div class="output-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-file-contract"></i>
+                        AI-Generated Summary
+                    </h2>
+                    <div class="output-actions">
+                        <button class="action-btn" onclick="copySummary()">
+                            <i class="far fa-copy"></i>
+                            Copy
+                        </button>
+                        <button class="action-btn" onclick="downloadSummary()">
+                            <i class="fas fa-download"></i>
+                            Download
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="output-container">
+                    <div id="outputText"></div>
+                    
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h4>Original Length</h4>
+                                <p id="originalStats">0 characters</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-compress-alt"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h4>Summary Length</h4>
+                                <p id="summaryStats">0 characters</p>
+                                <div class="stat-diff positive" id="reductionStats">
+                                    <i class="fas fa-arrow-down"></i>
+                                    <span>0% reduction</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h4>Reading Time Saved</h4>
+                                <p id="timeSaved">0 minutes</p>
+                                <div class="stat-diff positive">
+                                    <i class="fas fa-bolt"></i>
+                                    <span>Estimated</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="features-section">
+                <h2 class="section-title">
+                    <i class="fas fa-star"></i>
+                    Why Choose Content Summarize
+                </h2>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>Advanced AI</h3>
+                        <p>We use clever AI to read your content and find the most important points, so your summaries are truly helpful.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Privacy First</h3>
+                        <p>We keep your data private! All processing is done on your device, so your information never leaves it.</p>
+                    </p>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <h3>Benefit focused</h3>
+                        <p>Get full summaries in seconds. Save hours of reading time without losing quality.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feedback-section">
+                <div class="feedback-header">
+                    <div class="feedback-icon">
+                        <i class="fas fa-comment-alt"></i>
+                    </div>
+                    <div class="feedback-content">
+                        <h2>Help Us Improve</h2>
+                        <p>Your valuable feedback helps us make (content summarize) even better.</p>
+                    </div>
+                </div>
+                
+                <div class="feedback-input-container">
+                    <textarea id="feedbackInput" placeholder="What do you think about Content Summarize?"></textarea>
+                    <button class="feedback-btn" onclick="submitFeedback()">
+                        <i class="fas fa-paper-plane"></i>
+                        Send Feedback
+                    </button>
+                    <div class="thank-you-message" id="thankYouMessage">
+                        <i class="fas fa-check-circle"></i>
+                        Thank you for your valuable feedback!
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Privacy Policy</a>
+                    <a href="#" class="footer-link">Terms of Service</a>
+                    <a href="#" class="footer-link">Contact Us</a>
+                </div>
+                <p class="copyright">© 2025 Summarizer. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script>
+        // Data for example blogs
+        const exampleBlogs = {
+            1: "In an increasingly interconnected world,cybersecurity is no longer just a technical concern it's a fundamental necessity. It encompasses the practices, technologies, and processes designed to protect digital systems, networks, programs, and data from malicious attacks, damage, or unauthorized access. This includes a broad range of defenses: from implementing robust firewalls and encryption to managing access controls, securing endpoints, and developing comprehensive incident response plans. Effective cybersecurity aims to ensure the confidentiality, integrity, and availability of information, safeguarding sensitive data from theft, alteration, or destruction. It's a continuous battle against evolving threats like malware, phishing, ransomware, and sophisticated state sponsored attacks, requiring constant vigilance and adaptation.\n\nPenetration testing, often referred to as ethical hacking, is a specialized subset of cybersecurity that actively seeks out vulnerabilities before malicious actors can exploit them. Unlike passive security measures, pen testers simulate real world cyberattacks against an organization's own systems, applications, and networks, using the same tools and techniques as actual adversaries. The goal is not to cause harm, but to identify weaknesses in security configurations, software bugs, human processes, or physical security that could lead to a breach. From web application testing and network penetration testing to social engineering simulations, these exercises provide invaluable insights into an organization's true security posture. The findings from a penetration test allow organizations to proactively patch vulnerabilities, strengthen their defenses, and significantly reduce their attack surface, moving towards a more resilient and secure digital environment.",
+            2: " At its core,front-end development is about building everything you see and interact with on a website or web application. It's the art of transforming design mockups into functional, beautiful, and intuitive user interfaces. Front-end developers primarily work with three foundational languages: HTML for structuring the content,CSS for styling and visual presentation, and JavaScript for adding interactivity and dynamic behavior. Beyond these basics, the modern front-end landscape heavily relies on powerful frameworks and libraries like React, Angular, and Vue.js, which streamline complex development and enable highly interactive user experiences.\n\nA key focus for any front-end developer is ensuring a seamless and engaging user experience (UX). This includes making sure the website is responsive (looks good and functions well on all devices, from desktops to mobile phones), optimizing for performance (fast loading times), and prioritizing accessibility so everyone can use it. They act as the bridge between design and functionality, creating the visual layer that users directly interact with while ensuring smooth communication with the back-end services. Essentially, if you can click, type, or see it on a webpage, a front-end developer played a crucial role in bringing it to life.",
+            3: "Back-end development is all about the unseen engine that powers web applications. It handles the server-side logic, manages databases, and builds the Application Programming Interfaces (APIs) that allow different parts of an application to communicate. Essentially, back-end developers ensure everything works smoothly behind the scenes, from user authentication to processing transactions and retrieving data.\n\nPopular back-end programming languages include Python (often with frameworks like Django or Flask),Node.js (allowing JavaScript on the server),Ruby (with Ruby on Rails), and Java (using Spring Boot). These languages are coupled with various database systems like PostgreSQL ,MongoDB (for NoSQL needs), and MySQL to store and organize information. Back-end developers are crucial for designing server architecture, implementing robust security measures, optimizing for scalability (to handle many users), and ensuring the seamless flow of data between the front-end and the database. They build the reliable and secure infrastructure that makes a modern web application truly functional."
+        };
+
+        // DOM Elements
+        const urlInput = document.getElementById('urlInput');
+        const blogInput = document.getElementById('blogInput');
+        const charCount = document.getElementById('charCount');
+        const outputSection = document.getElementById('outputSection');
+        const outputText = document.getElementById('outputText');
+        const originalStats = document.getElementById('originalStats');
+        const summaryStats = document.getElementById('summaryStats');
+        const reductionStats = document.getElementById('reductionStats');
+        const timeSaved = document.getElementById('timeSaved');
+        const feedbackInput = document.getElementById('feedbackInput');
+        const thankYouMessage = document.getElementById('thankYouMessage');
+        const toastContainer = document.getElementById('toastContainer');
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            outputSection.style.display = 'none'; // Initial hide
+            blogInput.addEventListener('input', updateCharCount);
+            urlInput.addEventListener('input', handleUrlInput); // New listener for URL input
+            updateCharCount(); // Call once on load for initial content
+        });
+
+        // Function to update character count
+        function updateCharCount() {
+            charCount.textContent = blogInput.value.length.toLocaleString();
+        }
+
+        // Handle URL input: clear textarea if URL is entered
+        function handleUrlInput() {
+            if (urlInput.value.trim() !== '') {
+                blogInput.value = ''; // Clear textarea if URL is being used
+                updateCharCount();
+            }
+        }
+
+        // Load example blog content
+        function loadExample(index) {
+            urlInput.value = ''; // Clear URL input when loading example text
+            blogInput.value = exampleBlogs[index];
+            updateCharCount(); // Update char count after loading example
+            outputSection.style.display = 'none'; // Hide output when new content is loaded
+            showToast('Example loaded!', 'info');
+        }
+
+        // Clear content from the textarea
+        function clearText() {
+            blogInput.value = '';
+            updateCharCount();
+            outputSection.style.display = 'none';
+            showToast('Content cleared!', 'info');
+        }
+
+        // Clear both URL and Textarea
+        function clearAllInputs() {
+            urlInput.value = '';
+            blogInput.value = '';
+            updateCharCount();
+            outputSection.style.display = 'none';
+            showToast('All inputs cleared!', 'info');
+        }
+
+        // Paste content from clipboard
+        async function pasteText() {
+            try {
+                const text = await navigator.clipboard.readText();
+                // Check if text looks like a URL
+                if (text.startsWith('http://') || text.startsWith('https://')) {
+                    urlInput.value = text;
+                    blogInput.value = ''; // Clear text area
+                    showToast('URL pasted!', 'info');
+                } else {
+                    blogInput.value = text;
+                    urlInput.value = ''; // Clear URL input
+                    showToast('Content pasted!', 'info');
+                }
+                updateCharCount();
+                outputSection.style.display = 'none';
+            } catch (err) {
+                console.error('Failed to read clipboard contents: ', err);
+                showToast('Failed to paste content. Please allow clipboard access.', 'error');
+            }
+        }
+
+        // Main summarization logic
+        async function summariseContent() {
+            const url = urlInput.value.trim();
+            const text = blogInput.value.trim();
+            let contentToSummarise = '';
+
+            if (url) {
+                showToast('Attempting to fetch content from URL...', 'info');
+                outputText.innerHTML = '<span class="loading"><i class="fas fa-cloud-download-alt"></i> Fetching content from URL...</span>';
+                outputSection.style.display = 'block';
+
+                try {
+                    // *** IMPORTANT LIMITATION EXPLANATION ***
+                    // Direct client-side fetching of arbitrary URLs is blocked by the Same-Origin Policy.
+                    // This means a browser cannot directly fetch content from a URL on a different domain
+                    // than where this HTML file is hosted, unless the target server explicitly
+                    // allows it via Cross-Origin Resource Sharing (CORS) headers.
+                    //
+                    // To truly summarize from an arbitrary URL, you would need a SERVER-SIDE PROXY.
+                    // The client (this JavaScript) would send the URL to your server,
+                    // and your server would fetch the URL content and send it back to the client.
+                    //
+                    // The 'fetch' call below is for demonstration and will likely fail due to CORS.
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    contentToSummarise = await response.text();
+                    // Basic parsing (real parsing requires a robust server-side solution or more complex client-side libraries)
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(contentToSummarise, 'text/html');
+                    const mainContentElement = doc.querySelector('body') || doc; // Try to get body content, fallback to whole document
+                    contentToSummarise = mainContentElement ? mainContentElement.innerText : contentToSummarise;
+
+                    if (contentToSummarise.length < 100) { // Check if fetched content is too short
+                        showToast('Fetched content is too short or unstructured. Please try pasting text directly.', 'warning');
+                        outputText.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Fetched content too short or inaccessible. Please paste text directly.';
+                        return;
+                    }
+
+                } catch (error) {
+                    console.error("Error fetching URL:", error);
+                    let errorMessage = `Failed to fetch content from URL. This is likely due to <a href="https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy" target="_blank" rel="noopener noreferrer">Cross-Origin Policy (CORS) restrictions</a>.`;
+                    if (error.message.includes('NetworkError')) {
+                        errorMessage += ` The server might not allow direct access from browsers.`;
+                    } else if (error.message.includes('Failed to fetch')) {
+                        errorMessage += ` The URL might be invalid, or the server blocked the request.`;
+                    }
+                    errorMessage += ` To summarize from arbitrary URLs, a <strong>server-side proxy is required</strong>. Please paste content directly instead.`;
+                    outputText.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${errorMessage}`;
+                    outputSection.style.display = 'block';
+                    originalStats.textContent = '0 characters';
+                    summaryStats.textContent = '0 characters';
+                    reductionStats.innerHTML = '<i class="fas fa-exclamation-circle"></i> 0% reduction';
+                    timeSaved.textContent = '0 minutes';
+                    showToast('URL summarization failed (CORS issue).', 'error');
+                    return; // Stop function execution
+                }
+            } else if (text) {
+                contentToSummarise = text;
+            } else {
+                outputText.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please enter some content or a URL to summarize.';
+                outputSection.style.display = 'block';
+                originalStats.textContent = '0 characters';
+                summaryStats.textContent = '0 characters';
+                reductionStats.innerHTML = '<i class="fas fa-exclamation-circle"></i> 0% reduction';
+                timeSaved.textContent = '0 minutes';
+                showToast('Please enter text or a URL.', 'warning');
+                return;
+            }
+
+            if (!contentToSummarise) {
+                 outputText.innerHTML = '<i class="fas fa-exclamation-triangle"></i> No content available to summarize. Please check your input.';
+                 outputSection.style.display = 'block';
+                 originalStats.textContent = '0 characters';
+                 summaryStats.textContent = '0 characters';
+                 reductionStats.innerHTML = '<i class="fas fa-exclamation-circle"></i> 0% reduction';
+                 timeSaved.textContent = '0 minutes';
+                 showToast('No content to summarize.', 'warning');
+                 return;
+            }
+
+
+            // Display loading for summarization phase
+            outputText.innerHTML = '<span class="loading"><i class="fas fa-spinner fa-spin"></i> Analyzing content...</span>';
+            outputSection.style.display = 'block';
+            originalStats.textContent = `${contentToSummarise.length.toLocaleString()} characters`; // Show original length immediately
+            summaryStats.textContent = 'Calculating...';
+            reductionStats.innerHTML = '<i class="fas fa-sync fa-spin"></i> Calculating...';
+            timeSaved.textContent = 'Calculating...';
+
+            // Simulate AI processing delay
+            setTimeout(() => {
+                // Basic summarization logic (can be replaced with actual AI API call)
+                const sentences = contentToSummarise.match(/[^.!?]+[.!?]?/g) || [];
+                
+                // More advanced scoring (from your second code)
+                const words = contentToSummarise.toLowerCase().replace(/[^a-z\s]/g, "").split(/\s+/).filter(w => w.length > 0);
+                const freq = {};
+                const ignore = ["the", "and", "this", "that", "have", "from", "was", "with", "your", "you", "been", "for", "are", "but", "not", "can", "will", "has", "they", "more", "which", "their", "what", "when", "where", "who", "whom", "whose", "why", "how", "such", "also", "about", "into", "just", "like", "many", "much", "must", "only", "other", "should", "some", "than", "then", "there", "these", "those", "under", "upon", "would"]; // Expanded ignore list
+
+                for (let word of words) {
+                    if (word.length > 3 && !ignore.includes(word)) {
+                        freq[word] = (freq[word] || 0) + 1;
+                    }
+                }
+
+                const scoredSentences = sentences.map(sentence => {
+                    let score = 0;
+                    const sentenceWords = sentence.toLowerCase().split(/\s+/);
+                    for (let word of sentenceWords) {
+                        score += freq[word] || 0;
+                    }
+                    return { sentence, score };
+                });
+
+                // Sort by score and take top 25-35% of sentences, with a minimum of 3
+                const numSentencesForSummary = Math.max(3, Math.floor(sentences.length * 0.3));
+                scoredSentences.sort((a, b) => b.score - a.score);
+                const summary = scoredSentences.slice(0, numSentencesForSummary)
+                                                .map(item => item.sentence.trim())
+                                                .filter(s => s.length > 0) // Remove empty sentences
+                                                .join(" ");
+
+                const finalSummary = summary.length > 0 ? summary : "The content is too short or lacks sufficient information to generate a meaningful summary. Please provide more detailed text.";
+                
+                outputText.innerText = finalSummary;
+
+                // Update stats
+                const originalChars = contentToSummarise.length;
+                const summaryChars = finalSummary.length;
+                originalStats.textContent = `${originalChars.toLocaleString()} characters`;
+                summaryStats.textContent = `${summaryChars.toLocaleString()} characters`;
+
+                const reduction = originalChars > 0 ? Math.round(100 - (summaryChars / originalChars * 100)) : 0;
+                reductionStats.innerHTML = `<i class="fas fa-arrow-down"></i> ${reduction}% reduction`;
+                reductionStats.className = `stat-diff ${reduction > 0 ? 'positive' : ''}`; // Apply positive class if reduction > 0
+
+                // Estimate time saved (assuming average reading speed of 200 words per minute)
+                const originalWords = contentToSummarise.split(/\s+/).filter(w => w.length > 0).length;
+                const summaryWords = finalSummary.split(/\s+/).filter(w => w.length > 0).length;
+                const timeToReadOriginal = originalWords / 200;
+                const timeToReadSummary = summaryWords / 200;
+                const estimatedTimeSaved = Math.max(0, (timeToReadOriginal - timeToReadSummary)).toFixed(1);
+                timeSaved.textContent = `${estimatedTimeSaved} minutes`;
+
+                showToast('Summary generated successfully!', 'success');
+
+            }, 800); // Simulate network delay
+        }
+
+        // Copy summary to clipboard
+        function copySummary() {
+            const summaryText = outputText.innerText;
+            if (summaryText === "Please enter some content to summarize." || summaryText.includes("Analyzing content...") || summaryText.includes("Failed to fetch content from URL.") || summaryText.length === 0) {
+                showToast('Nothing to copy yet!', 'warning');
+                return;
+            }
+            navigator.clipboard.writeText(summaryText).then(() => {
+                showToast('Summary copied to clipboard!', 'success');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                showToast('Failed to copy summary. Please try again.', 'error');
+            });
+        }
+
+        // Download summary as a text file
+        function downloadSummary() {
+            const summaryText = outputText.innerText;
+            if (summaryText === "Please enter some content to summarize." || summaryText.includes("Analyzing content...") || summaryText.includes("Failed to fetch content from URL.") || summaryText.length === 0) {
+                showToast('No summary to download!', 'warning');
+                return;
+            }
+
+            const filename = 'summifypro_summary.txt';
+            const blob = new Blob([summaryText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('Summary downloaded!', 'info');
+        }
+
+        // Submit feedback
+        function submitFeedback() {
+            const feedback = feedbackInput.value.trim();
+
+            if (feedback.length < 20) { // Require more detailed feedback
+                thankYouMessage.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please provide more detailed feedback (at least 20 characters).';
+                thankYouMessage.style.color = 'var(--warning)';
+                thankYouMessage.style.display = 'flex';
+                showToast('Feedback too short.', 'warning');
+                return;
+            }
+
+            // In a real application, you'd send this 'feedback' to a server
+            console.log("Feedback submitted:", feedback);
+            
+            thankYouMessage.style.display = 'flex';
+            thankYouMessage.style.color = 'var(--success)';
+            thankYouMessage.innerHTML = '<i class="fas fa-check-circle"></i> Thank you for your valuable feedback!';
+            feedbackInput.value = ''; // Clear input
+
+            setTimeout(() => {
+                thankYouMessage.style.display = 'none';
+            }, 5000); // Hide thank you message after 5 seconds
+            showToast('Feedback submitted successfully!', 'success');
+        }
+
+        // Universal Toast Notification Function
+        function showToast(message, type = 'info', duration = 3000) {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `<i class="${getToastIcon(type)}"></i> ${message}`;
+            
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('hide');
+                toast.addEventListener('animationend', () => {
+                    toast.remove();
+                });
+            }, duration);
+        }
+
+        function getToastIcon(type) {
+            switch(type) {
+                case 'info': return 'fas fa-info-circle';
+                case 'success': return 'fas fa-check-circle';
+                case 'warning': return 'fas fa-exclamation-triangle';
+                case 'error': return 'fas fa-times-circle';
+                default: return 'fas fa-info-circle';
+            }
+        }
+
+    </script>
+
+</body>
+</html>
